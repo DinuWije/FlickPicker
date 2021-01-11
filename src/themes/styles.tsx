@@ -11,6 +11,11 @@ export const appStyles = StyleSheet.create({
     backgroundColor: "#fff",
     flexDirection: "row",
   },
+  moviesSubContainer: {
+    flex: 1,
+    backgroundColor: "#fff",
+    flexDirection: "column",
+  },
   searchArea: {
     flex: 1,
     backgroundColor: "#fff",
@@ -135,5 +140,23 @@ export const addMovieStyles = StyleSheet.create({
     marginTop: 5,
     marginBottom: 5,
     textAlign: "center",
+  },
+});
+
+export const shareStyles = StyleSheet.create({
+  card: {
+    backgroundColor: colors.cardBackground,
+    minWidth: 540,
+    maxWidth: 540,
+    minHeight: 90,
+  },
+  mainText: {
+    fontSize: 20,
+    marginTop: 20,
+    marginStart: 20,
+  },
+  wipText: {
+    fontSize: 15,
+    marginStart: 20,
   },
 });

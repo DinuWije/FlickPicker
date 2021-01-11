@@ -4,6 +4,7 @@ import { Linking, StyleSheet, Text, View } from "react-native";
 import Search from "./src/Components/Search";
 import AddMovies from "./src/Components/AddMovies";
 import Title from "./src/Components/Title";
+import Share from "./src/Components/Share";
 import { Provider } from "react-redux";
 import { appStyles as styles } from "./src/themes/styles";
 
@@ -21,8 +22,13 @@ export default function App() {
             <StatusBar style="auto" />
             <Search />
           </View>
-          <View style={styles.addMoviesArea}>
-            <AddMovies />
+          <View style={styles.moviesSubContainer}>
+            <View style={styles.addMoviesArea}>
+              <AddMovies />
+            </View>
+            <View style={styles.addMoviesArea}>
+              <Share />
+            </View>
           </View>
         </View>
         <Text
