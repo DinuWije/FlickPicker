@@ -1,12 +1,16 @@
 import * as React from "react";
-import { NativeSyntheticEvent, NativeTouchEvent } from "react-native";
-import { Button, View, StyleSheet } from "react-native";
-import { Searchbar, ProgressBar, Colors, List } from "react-native-paper";
-import { connect, useDispatch, useSelector } from "react-redux";
-import { addID, deleteID } from "../actions/movieIDs";
-
-let OMDBkey: string = "346ff3a2";
-
+import {
+  NativeSyntheticEvent,
+  NativeTouchEvent,
+  Button,
+  View,
+  Text,
+} from "react-native";
+import { Searchbar, List, Card } from "react-native-paper";
+import { useDispatch, useSelector } from "react-redux";
+import { addID } from "../actions/movieIDs";
+import { searchStyles as styles } from "../themes/styles";
+import secrets from "../../secrets";
 interface Movie {
   Title: string;
   Year: string;
@@ -15,24 +19,12 @@ interface Movie {
   Poster: string;
   ButtonTitle: string;
   disabled: boolean;
+  icon: string;
 }
-
-const styles = StyleSheet.create({
-  searchbar: {
-    minWidth: 500,
-    marginTop: 20,
-  },
-  movieButton: {
-    maxHeight: 10,
-    justifyContent: "center",
-    marginTop: 20,
-    minWidth: 100,
-  },
-});
 
 function getMovies(title: string): Promise<Movie[]> {
   const searchTitle = title.replace(/\s/g, "+");
-  let fetchurl: string = `http://www.omdbapi.com/?apikey=${OMDBkey}&s=${searchTitle}`;
+  let fetchurl: string = `http://www.omdbapi.com/?apikey=${secrets.OMDBkey}&s=${searchTitle}`;
   return fetch(fetchurl)
     .then((res) => res.json())
     .then((res) => {
@@ -45,45 +37,68 @@ function getMovies(title: string): Promise<Movie[]> {
 
 const Search = () => {
   const [movies, setMovies] = React.useState<Movie[]>([]);
-  const [progress, setProgress] = React.useState(0);
   const [searchQuery, setSearchQuery] = React.useState("");
 
   const dispatch = useDispatch();
 
   const addNewId = (id: string) => dispatch(addID(id));
 
-  const movieIDs: string[] = useSelector((state) => state.idReducer.movieIDs);
-
-  const onChangeSearch = (query: any) => {
-    setSearchQuery(query);
-
-    //TODO: Take button Press Logic here (remember to swap searchQuery with query in getMovies() func)
-  };
-
-  const onButtonPress = () => {
-    const imdbIDs = new Set(movieIDs);
+  const updateMovies = (movieIDarr: any) => {
+    const imdbIDs = new Set(movieIDarr);
     getMovies(searchQuery).then((moviesArr) => {
-      moviesArr = moviesArr.filter((movie) => movie.Type === "movie");
+      moviesArr = moviesArr.filter(
+        (movie) => movie.Type === "movie" || movie.Type === "series"
+      );
       moviesArr.forEach(function (movie) {
         if (imdbIDs.has(movie.imdbID)) {
           movie.disabled = true;
           movie.ButtonTitle = "Added!";
+          if (movie.Type === "series") {
+            movie.icon = "television-classic";
+          } else {
+            movie.icon = "filmstrip";
+          }
         } else {
-          movie.ButtonTitle = "Add Movie";
+          if (imdbIDs.size >= 5) {
+            movie.disabled = true;
+            movie.ButtonTitle = "Max 5";
+            if (movie.Type === "series") {
+              movie.icon = "television-classic";
+            } else {
+              movie.icon = "filmstrip";
+            }
+          } else {
+            movie.disabled = false;
+            if (movie.Type === "series") {
+              movie.ButtonTitle = "Add Show";
+              movie.icon = "television-classic";
+            } else {
+              movie.ButtonTitle = "Add Movie";
+              movie.icon = "filmstrip";
+            }
+          }
         }
       });
       setMovies(moviesArr);
     });
   };
 
-  const onPressMovie = (_: any, imdb: string, i: number, movie: Movie) => {
-    setProgress(progress + 1);
 
+  const movieIDs: string[] = useSelector((state) => {
+    let movieIDarr: string[] = state.idReducer.movieIDs;
+    updateMovies(movieIDarr);
+    return movieIDarr;
+  });
+
+
+  const onChangeSearch = (query: any) => {
+    setSearchQuery(query);
+  };
+
+  const onPressMovie = (_: any, imdb: string, i: number) => {
     const imdbIDs = new Set(movieIDs);
 
-    if (!imdbIDs.has(imdb)) {
-      addNewId(imdb);
-    }
+    addNewId(imdb);
 
     imdbIDs.add(imdb);
 
@@ -94,40 +109,40 @@ const Search = () => {
     setMovies(newArr);
   };
 
-  console.log(movieIDs);
-
   return (
     <View>
-      <Searchbar
-        placeholder="Search"
-        onChangeText={onChangeSearch}
-        value={searchQuery}
-        style={styles.searchbar}
-      />
-      <Button title="Click ME" onPress={onButtonPress} />
-      <ProgressBar progress={progress / 5} color={Colors.red800} />
-      <View>
-        {movies.map((movie, i) => (
-          <List.Item
-            title={movie.Title}
-            description={movie.Year}
-            key={movie.imdbID}
-            left={(props) => <List.Icon {...props} icon="folder" />}
-            right={(props) => (
-              <View style={styles.movieButton}>
-                <Button
-                  {...props}
-                  title={movie.ButtonTitle}
-                  onPress={(ev: NativeSyntheticEvent<NativeTouchEvent>) =>
-                    onPressMovie(ev, movie.imdbID, i, movie)
-                  }
-                  disabled={movie.disabled}
-                />
-              </View>
-            )}
-          />
-        ))}
-      </View>
+      <Card style={styles.card}>
+        <Text style={styles.mainText}>1. Search For Movies and TV Shows</Text>
+        <Searchbar
+          placeholder="Search"
+          onChangeText={onChangeSearch}
+          value={searchQuery}
+          style={styles.searchbar}
+        />
+        <View>
+          {movies.map((movie, i) => (
+            <List.Item
+              title={movie.Title}
+              description={movie.Year}
+              key={movie.imdbID}
+              style={styles.listItem}
+              left={(props) => <List.Icon {...props} icon={movie.icon} />}
+              right={(props) => (
+                <View style={styles.movieButton}>
+                  <Button
+                    {...props}
+                    title={movie.ButtonTitle}
+                    onPress={(ev: NativeSyntheticEvent<NativeTouchEvent>) =>
+                      onPressMovie(ev, movie.imdbID, i)
+                    }
+                    disabled={movie.disabled}
+                  />
+                </View>
+              )}
+            />
+          ))}
+        </View>
+      </Card>
     </View>
   );
 };

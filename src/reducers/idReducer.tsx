@@ -18,7 +18,7 @@ const idReducer = (state = initialState, action: any) => {
     case DELETE_ID:
       return {
         ...state,
-        movieIDs: state.movieIDs.filter((id) => id != action.data),
+        movieIDs: state.movieIDs.filter((id) => id !== action.data),
       };
     default:
       return state;
