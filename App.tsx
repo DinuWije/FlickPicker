@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import React from "react";
-import { Linking, StyleSheet, Text, View } from "react-native";
+import { View } from "react-native";
 import Search from "./src/Components/Search";
 import AddMovies from "./src/Components/AddMovies";
 import Title from "./src/Components/Title";
@@ -25,20 +25,12 @@ export default function App() {
           <View style={styles.moviesSubContainer}>
             <View style={styles.addMoviesArea}>
               <AddMovies />
-            </View>
-            <View style={styles.addMoviesArea}>
-              <Share />
+              <View style={styles.tbd}>
+                <Share />
+              </View>
             </View>
           </View>
         </View>
-        <Text
-          style={styles.linkText}
-          onPress={() =>
-            Linking.openURL("https://github.com/DinuWije/FlickPicker")
-          }
-        >
-          Feel free to fork this React Native project from my GitHub!
-        </Text>
       </View>
     </Provider>
   );

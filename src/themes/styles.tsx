@@ -40,6 +40,9 @@ export const appStyles = StyleSheet.create({
     textAlign: "center",
     color: colors.linkColor,
   },
+  tbd: {
+    marginTop: 50,
+  },
 });
 
 export const titleStyles = StyleSheet.create({
@@ -52,6 +55,14 @@ export const titleStyles = StyleSheet.create({
     fontSize: 20,
     marginStart: 20,
     marginTop: 10,
+  },
+  linkText: {
+    flex: 1,
+    fontSize: 18,
+    marginBottom: 20,
+    marginTop: 20,
+    marginStart: 20,
+    color: colors.linkColor,
   },
 });
 

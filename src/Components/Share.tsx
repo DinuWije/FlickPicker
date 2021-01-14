@@ -1,7 +1,6 @@
-import { fromPairs } from "lodash";
 import * as React from "react";
-import { Button, View, Text } from "react-native";
-import { ProgressBar, Colors, List, Card, Title } from "react-native-paper";
+import { View} from "react-native";
+import { Card, Title } from "react-native-paper";
 import { shareStyles as styles } from "../themes/styles";
 
 const Share = () => {
